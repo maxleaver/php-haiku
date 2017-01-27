@@ -13,11 +13,14 @@ class Haiku
 		is stripped from the text string
 		to prep for counting.
 		 */
+		$string = self::cleanString($string);
 
-		$decoded = html_entity_decode($string, ENT_QUOTES);
-		$stripped = strip_tags($decoded);
-
-		$syllableCount = self::countTotalSyllables($stripped);
+		/*
+		Count the syllables
+		for the entire text string
+		as a quick first check.
+		 */
+		$syllableCount = self::countTotalSyllables($string);
 
 		/*
 		Haiku can only
@@ -29,6 +32,17 @@ class Haiku
 		}
 
 		return self::buildHaiku($string);
+	}
+
+	private static function cleanString($string)
+	{
+		$string = utf8_decode($string);
+		$string = str_replace('&nbsp;', ' ', $string); // Convert &nbsp; to actual spaces
+		$string = html_entity_decode($string, ENT_QUOTES); // Decoded HTML entities
+		$string = strip_tags($string); // Removes HTML tags
+		$string = preg_replace('/\s\s+/', ' ', $string); // Removes multiple spaces
+		$string = trim($string); // Trims whitespace
+		return $string;
 	}
 
 	private static function countTotalSyllables($string)

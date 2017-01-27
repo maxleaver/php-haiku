@@ -39,4 +39,17 @@ class HaikuGeneratorTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals($expected, $result);
     }
+
+    /** @test */
+    public function html_and_special_characters_should_be_stripped_from_the_string()
+    {
+        $expected = array(
+            'first' => 'this string\'s got just the',
+            'second' => 'right number of syllables',
+            'third' => 'to be a haiku'
+        );
+        $result = $this->haiku->generate('this <a href="http://www.example.com">string&#39;s</a> got<br /><br> just the right number of syllables&nbsp;&nbsp; to be a haiku');
+
+        $this->assertEquals($expected, $result);
+    }
 }
