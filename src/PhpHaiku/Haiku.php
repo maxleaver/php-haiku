@@ -36,7 +36,8 @@ class Haiku
 
 	private static function cleanString($string)
 	{
-		$string = utf8_decode($string);
+		$string = preg_replace('/\x{FEFF}/u', '', $string); // Remove UTF-8 BOM
+		$string = utf8_decode($string); // Decode UTF-8 string
 		$string = str_replace('&nbsp;', ' ', $string); // Convert &nbsp; to actual spaces
 		$string = html_entity_decode($string, ENT_QUOTES); // Decoded HTML entities
 		$string = strip_tags($string); // Removes HTML tags

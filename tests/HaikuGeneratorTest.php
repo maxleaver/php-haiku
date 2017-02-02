@@ -52,4 +52,21 @@ class HaikuGeneratorTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals($expected, $result);
     }
+
+    /** @test */
+    public function should_remove_utf_8_bom_from_strings()
+    {
+        $string = 'this text string has just enough syllables to be made into haiku';
+        $utf8_string = utf8_encode($string);
+        $utf8_with_bom = $utf8_string . chr(239) . chr(187) . chr(191);
+
+        $expected = array(
+            'first' => 'this text string has just',
+            'second' => 'enough syllables to be',
+            'third' => 'made into haiku'
+        );
+        $result = $this->haiku->generate($utf8_with_bom);
+
+        $this->assertEquals($expected, $result);
+    }
 }
