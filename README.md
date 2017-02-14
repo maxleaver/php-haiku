@@ -1,28 +1,28 @@
 # PHP Haiku Generator
 Converts a text string<br />
 to haiku if possible<br />
-or it does nothing
+or it returns false.
 
 ## Installation
 ```
 composer require maxleaver/php-haiku
 ```
 
-## Usage
-A single static<br />
-method will return FALSE if<br />
-it can't be haiku.
-
-Otherwise it will<br />
-return an array with each<br />
-of the lines inside.
-
+## Basic Usage
 ```php
 <?php
 
 use PhpHaiku\Haiku;
 
-echo Haiku::generate($text);
+$haiku = new Haiku();
+$haiku->setText('Converts a text string to haiku if possible or it returns false.');
+
+if ($haiku->isHaiku()) {
+	echo $haiku->getFirstLine(); // Converts a text string
+	echo $haiku->getSecondLine(); // to haiku if possible
+	echo $haiku->getThirdLine(); // or it returns false.
+}
+
 ```
 
 ## Contributing

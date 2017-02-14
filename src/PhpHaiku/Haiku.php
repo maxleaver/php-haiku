@@ -2,39 +2,112 @@
 
 namespace PhpHaiku;
 
+use PhpHaiku\Morae;
 use DaveChild\TextStatistics as TS;
 
 class Haiku
 {
-	public static function generate($string)
+	public $text;
+	public $isHaiku = false;
+	public $first;
+	public $second;
+	public $third;
+
+	public function setText(string $text)
 	{
-		/*
-		The HTML
-		is stripped from the text string
-		to prep for counting.
-		 */
-		$string = self::cleanString($string);
+		$this->text = $this->cleanString($text);
 
-		/*
-		Count the syllables
-		for the entire text string
-		as a quick first check.
-		 */
-		$syllableCount = self::countTotalSyllables($string);
+		$result = $this->checkForHaiku();
+		$this->setHaiku($result);
+	}
 
-		/*
-		Haiku can only
-		have seventeen syllables.
-		Yeah, I know. It's strange.
-		 */
-		if ($syllableCount !== 17) {
+	public function getText()
+	{
+		return $this->text;
+	}
+
+	protected function setHaiku(bool $isHaiku)
+	{
+		$this->isHaiku = $isHaiku;
+	}
+
+	public function isHaiku()
+	{
+		return $this->isHaiku;
+	}
+
+	protected function setFirstLine($text)
+	{
+		$this->first = $text;
+	}
+
+	public function getFirstLine()
+	{
+		return $this->first;
+	}
+
+	protected function setSecondLine($text)
+	{
+		$this->second = $text;
+	}
+
+	public function getSecondLine()
+	{
+		return $this->second;
+	}
+
+	protected function setThirdLine($text)
+	{
+		$this->third = $text;
+	}
+
+	public function getThirdLine()
+	{
+		return $this->third;
+	}
+
+	protected function checkForHaiku()
+	{
+		$totalSyllables = TS\Syllables::totalSyllables($this->text);
+
+		// Can only be haiku if string has EXACTLY 17 syllables
+		if ($totalSyllables !== 17) {
 			return FALSE;
 		}
 
-		return self::buildHaiku($string);
+		// Split string into an array of words
+		$words = explode(' ', $this->text);
+
+		// Build the first line of the haiku
+		$firstLine = new Morae(5);
+		if (!$firstLine->build($words)) {
+			return FALSE;
+		}
+
+		$this->setFirstLine($firstLine->text);
+
+		// Build the second line of the haiku
+		$secondLine = new Morae(7);
+		if (!$secondLine->build($firstLine->remaining)) {
+			return FALSE;
+		}
+
+		$this->setSecondLine($secondLine->text);
+
+		// Build the third line of the haiku
+		$thirdLine = new Morae(5);
+		if (!$thirdLine->build($secondLine->remaining)) {
+			return FALSE;
+		}
+
+		$this->setThirdLine($thirdLine->text);
+
+		$this->third = $thirdLine->text;
+
+		return TRUE;
 	}
 
-	private static function cleanString($string)
+	protected function cleanString(string $string)
 	{
 		$string = preg_replace('/\x{FEFF}/u', '', $string); // Remove UTF-8 BOM
 		$string = utf8_decode($string); // Decode UTF-8 string
@@ -44,118 +117,5 @@ class Haiku
 		$string = preg_replace('/\s\s+/', ' ', $string); // Removes multiple spaces
 		$string = trim($string); // Trims whitespace
 		return $string;
-	}
-
-	private static function countTotalSyllables($string)
-	{
-		return TS\Syllables::totalSyllables($string);
-	}
-
-	private static function buildHaiku($string)
-	{
-		$words = explode(' ', $string);
-
-		$firstRow = array(
-			'syllables' => 0,
-			'words' => array()
-		);
-		$secondRow = array(
-			'syllables' => 0,
-			'words' => array()
-		);
-		$thirdRow = array(
-			'syllables' => 0,
-			'words' => array()
-		);
-
-		foreach ($words as $word) {
-			$cnt = TS\Syllables::syllableCount($word);
-
-			if ($firstRow['syllables'] < 5) {
-				/*
-				The syllables
-				are added to the first row
-				and it's checked for length.
-				 */
-				$firstRow['syllables'] += $cnt;
-
-				if ($firstRow['syllables'] > 5) {
-					return FALSE;
-				}
-
-				array_push($firstRow['words'], $word);
-				continue;
-			}
-
-			/*
-			The first row must have
-			exactly five syllables
-			or it's not haiku.
-			 */
-			if ($firstRow['syllables'] !== 5) {
-				return FALSE;
-			}
-
-			/*
-			The second row is
-			like the first, except it has
-			seven syllables.
-			 */
-			if ($secondRow['syllables'] < 7) {
-				$secondRow['syllables'] += $cnt;
-
-				if ($secondRow['syllables'] > 7) {
-					return FALSE;
-				}
-
-				array_push($secondRow['words'], $word);
-				continue;
-			}
-
-			/*
-			Check the second row
-			to make sure it's exactly
-			seven syllables.
-			 */
-			if ($secondRow['syllables'] !== 7) {
-				return FALSE;
-			}
-
-			/*
-			The third row has five
-			syllables, just like the first.
-			Room to refactor.
-			 */
-			if ($thirdRow['syllables'] < 5) {
-				$thirdRow['syllables'] += $cnt;
-
-				if ($thirdRow['syllables'] > 5) {
-					return FALSE;
-				}
-
-				array_push($thirdRow['words'], $word);
-				continue;
-			}
-
-			/*
-			The third row must have
-			exactly five syllables
-			or it's not haiku
-			 */
-			if ($firstRow['syllables'] !== 5) {
-				return FALSE;
-			}
-		}
-
-		/*
-		Return an array
-		with the completed haiku
-		and find inner peace.
-		 */
-		return array(
-			'first' => implode(' ', $firstRow['words']),
-			'second' => implode(' ', $secondRow['words']),
-			'third' => implode(' ', $thirdRow['words'])
-		);
 	}
 }
