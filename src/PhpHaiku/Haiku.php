@@ -13,60 +13,104 @@ class Haiku
 	public $second;
 	public $third;
 
-	public function setText(string $text)
+	/**
+	 * Sets text and attempts to build the haiku
+	 * @param str $text String of text to attempt to make haiku
+	 */
+	public function setText($text)
 	{
-		$this->text = $this->cleanString($text);
+		$this->text = $this->sanitizeText($text);
 
-		$result = $this->checkForHaiku();
+		$result = $this->buildHaiku();
 		$this->setHaiku($result);
 	}
 
+	/**
+	 * Returns original text string
+	 * @return str Original text string
+	 */
 	public function getText()
 	{
 		return $this->text;
 	}
 
-	protected function setHaiku(bool $isHaiku)
+	/**
+	 * Sets isHaiku boolean
+	 * @param boolean $isHaiku Boolean value of haiku attempt
+	 */
+	protected function setHaiku($isHaiku)
 	{
 		$this->isHaiku = $isHaiku;
 	}
 
+	/**
+	 * Returns TRUE/FALSE if text string is a haiku
+	 * @return boolean    Result of haiku conversion
+	 */
 	public function isHaiku()
 	{
 		return $this->isHaiku;
 	}
 
+	/**
+	 * Sets the first line of the haiku
+	 * @param string $text First line of haiku
+	 */
 	protected function setFirstLine($text)
 	{
 		$this->first = $text;
 	}
 
+	/**
+	 * Returns the first line of the haiku
+	 * @return string First line of haiku
+	 */
 	public function getFirstLine()
 	{
 		return $this->first;
 	}
 
+	/**
+	 * Sets the second line of the haiku
+	 * @param string $text Second line of haiku
+	 */
 	protected function setSecondLine($text)
 	{
 		$this->second = $text;
 	}
 
+	/**
+	 * Returns the second line of the haiku
+	 * @return string Second line of haiku
+	 */
 	public function getSecondLine()
 	{
 		return $this->second;
 	}
 
+	/**
+	 * Sets the third line of the haiku
+	 * @param string $text Third line of haiku
+	 */
 	protected function setThirdLine($text)
 	{
 		$this->third = $text;
 	}
 
+	/**
+	 * Returns the third line of the haiku
+	 * @return string Third line of haiku
+	 */
 	public function getThirdLine()
 	{
 		return $this->third;
 	}
 
-	protected function checkForHaiku()
+	/**
+	 * Attempts to build the haiku
+	 * @return boolean TRUE/FALSE if haiku was created
+	 */
+	protected function buildHaiku()
 	{
 		$totalSyllables = TS\Syllables::totalSyllables($this->text);
 
@@ -107,7 +151,12 @@ class Haiku
 		return TRUE;
 	}
 
-	protected function cleanString(string $string)
+	/**
+	 * Sanitizes text strings
+	 * @param  str $string Text string
+	 * @return str         Sanitized text string
+	 */
+	protected function sanitizeText($string)
 	{
 		$string = preg_replace('/\x{FEFF}/u', '', $string); // Remove UTF-8 BOM
 		$string = utf8_decode($string); // Decode UTF-8 string

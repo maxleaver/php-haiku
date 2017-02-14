@@ -15,16 +15,29 @@ class Morae
 		$this->maxSyllables = $maxSyllables;
 	}
 
+	/**
+	 * Returns text of the morae
+	 * @return str Morae text
+	 */
 	public function getText()
 	{
 		return $this->text;
 	}
 
+	/**
+	 * Returns array of unused words
+	 * @return array Array of unused words
+	 */
 	public function getRemaining()
 	{
 		return $this->remaining;
 	}
 
+	/**
+	 * Builds the morae
+	 * @param  array  $words  Array of words to use
+	 * @return boolean        TRUE/FALSE if morae was built
+	 */
 	public function build(array $words)
 	{
 		$totalSyllables = 0;
