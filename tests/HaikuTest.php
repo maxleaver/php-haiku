@@ -68,8 +68,7 @@ class HaikuTest extends PHPUnit_Framework_TestCase
     public function should_remove_utf_8_bom_from_strings()
     {
         $string = 'this text string has just enough syllables to be made into haiku';
-        $utf8_string = utf8_encode($string);
-        $utf8_with_bom = $utf8_string . chr(239) . chr(187) . chr(191);
+        $utf8_with_bom = chr(239) . chr(187) . chr(191) . $string;
 
         $this->haiku->setText($utf8_with_bom);
 
