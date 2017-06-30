@@ -14,8 +14,7 @@ composer require maxleaver/php-haiku
 
 use PhpHaiku\Haiku;
 
-$haiku = new Haiku();
-$haiku->setText('Converts a text string to haiku if possible or it returns false.');
+$haiku = new Haiku('Converts a text string to haiku if possible or it returns false.');
 
 if ($haiku->isHaiku()) {
 	echo $haiku->getFirstLine(); // Converts a text string

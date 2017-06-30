@@ -2,43 +2,44 @@
 
 use PhpHaiku\Morae;
 
-class MoraeTest extends PHPUnit_Framework_TestCase
+class MoraeTest extends \PHPUnit_Framework_TestCase
 {
-	protected $morae;
+    /**
+        @test
+        @expectedException Exception
+    */
+    public function it_cannot_have_words_that_span_the_maximum_syllables()
+    {
+        $words = array('a', 'word', 'array');
+        new Morae(3, $words);
 
-	public function setUp()
-	{
-		$this->morae = new Morae(5);
-	}
+        $this->expectException(Exception::class);
+    }
 
     /** @test */
-    public function builds_correctly_if_syllables_are_exact_amount()
+    public function it_has_an_array_of_leftover_words()
     {
         $words = array('an', 'array', 'of', 'words');
-        $result = $this->morae->build($words);
+        $morae = new Morae(3, $words);
 
-        $this->assertTrue($result);
-        $this->assertEquals($this->morae->text, 'an array of words');
-        $this->assertEquals($this->morae->remaining, array());
+        $this->assertEquals($morae->getRemaining(), ['of', 'words']);
     }
 
     /** @test */
-    public function returns_remaining_words_if_successful_but_has_leftover_words()
+    public function it_has_an_empty_array_of_leftover_words_if_the_string_is_the_exact_syllables()
     {
-        $words = array('an', 'array', 'of', 'words', 'plus', 'some', 'more');
-        $result = $this->morae->build($words);
+        $words = array('an', 'array', 'of', 'words');
+        $morae = new Morae(5, $words);
 
-        $this->assertTrue($result);
-        $this->assertEquals($this->morae->text, 'an array of words');
-        $this->assertEquals($this->morae->remaining, array('plus', 'some', 'more'));
+        $this->assertEmpty($morae->getRemaining());
     }
 
     /** @test */
-    public function fails_if_words_exceed_maximum_syllable_count()
+    public function it_has_a_string_representation_of_the_line()
     {
-        $words = array('this', 'array', 'is', 'excessively', 'long');
-        $result = $this->morae->build($words);
+        $words = array('an', 'array', 'of', 'words');
 
-        $this->assertFalse($result);
+        $morae = new Morae(3, $words);
+        $this->assertEquals($morae->getText(), 'an array');
     }
 }
